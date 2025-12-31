@@ -23,19 +23,17 @@ const PredictionForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(
-        `https://YOUR_BACKEND_URL/predict/${model}`, // replace with deployed backend
-        {
-          ...formData,
-          Age: parseFloat(formData.Age),
-          SystolicBP: parseFloat(formData.SystolicBP),
-          DiastolicBP: parseFloat(formData.DiastolicBP),
-          BloodSugar: parseFloat(formData.BloodSugar),
-          BodyTemp: parseFloat(formData.BodyTemp),
-          HeartRate: parseFloat(formData.HeartRate),
-          MaternityMonth: parseInt(formData.MaternityMonth)
-        }
-      );
+      const url = `https://maternity-ml-backend-2.onrender.com/predict/${model}`; // replace with deployed backend
+      const response = await axios.post(url, {
+        ...formData,
+        Age: parseFloat(formData.Age),
+        SystolicBP: parseFloat(formData.SystolicBP),
+        DiastolicBP: parseFloat(formData.DiastolicBP),
+        BloodSugar: parseFloat(formData.BloodSugar),
+        BodyTemp: parseFloat(formData.BodyTemp),
+        HeartRate: parseFloat(formData.HeartRate),
+        MaternityMonth: parseInt(formData.MaternityMonth)
+      });
       setResult(response.data.RiskLevel);
     } catch (error) {
       console.error(error);
@@ -74,7 +72,7 @@ const PredictionForm = () => {
 
       {result !== null && (
         <div className="result-card">
-          Predicted Risk Level: {result}
+          Predicted Risk Level: <strong>{result === 0 ? "Low Risk" : result === 1 ? "Medium Risk" : "High Risk"}</strong>
         </div>
       )}
     </div>
@@ -82,4 +80,3 @@ const PredictionForm = () => {
 };
 
 export default PredictionForm;
-
