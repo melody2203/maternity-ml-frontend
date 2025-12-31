@@ -15,6 +15,7 @@ const PredictionForm = () => {
 
   const [result, setResult] = useState(null);
   const [model, setModel] = useState("logistic"); // default model
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -22,6 +23,9 @@ const PredictionForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    setLoading(true);
+    setResult(null); // Clear previous result
 
     try {
       const url = `https://maternity-ml-backend-4.onrender.com/predict/${model}`;
@@ -48,6 +52,8 @@ const PredictionForm = () => {
     } catch (error) {
       console.error(error.response?.data || error.message);
       alert("Error connecting to API.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -78,10 +84,23 @@ const PredictionForm = () => {
           </select>
         </div>
 
-        <button type="submit">Predict Risk</button>
+        <button type="submit" disabled={loading}>
+          {loading ? "Predicting..." : "Predict Risk"}
+        </button>
       </form>
 
-      {result !== null && (
+      {loading && (
+        <div className="loading-container">
+          <div className="spinner"></div>
+          <p className="loading-text">
+            Analyzing maternity risk data...
+            <br />
+            <small>First request may take 30-60 seconds (server waking up)</small>
+          </p>
+        </div>
+      )}
+
+      {result !== null && !loading && (
         <div className="result-card">
           Predicted Risk Level: <strong>{result === 0 ? "Low Risk" : result === 1 ? "Medium Risk" : "High Risk"}</strong>
         </div>
