@@ -22,24 +22,35 @@ const PredictionForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     try {
-      const url = `https://maternity-ml-backend-2.onrender.com/predict/${model}`; // replace with deployed backend
-      const response = await axios.post(url, {
-        ...formData,
+      const url = `https://maternity-ml-backend-4.onrender.com/predict/${model}`;
+
+      const payload = {
         Age: parseFloat(formData.Age),
         SystolicBP: parseFloat(formData.SystolicBP),
         DiastolicBP: parseFloat(formData.DiastolicBP),
-        BloodSugar: parseFloat(formData.BloodSugar),
+        BS: parseFloat(formData.BloodSugar), // 🔥 FIX HERE
         BodyTemp: parseFloat(formData.BodyTemp),
         HeartRate: parseFloat(formData.HeartRate),
-        MaternityMonth: parseInt(formData.MaternityMonth)
+        MaternityMonth: parseInt(formData.MaternityMonth),
+      };
+
+      console.log("Sending payload:", payload);
+
+      const response = await axios.post(url, payload, {
+        headers: {
+          "Content-Type": "application/json",
+        },
       });
+
       setResult(response.data.RiskLevel);
     } catch (error) {
-      console.error(error);
+      console.error(error.response?.data || error.message);
       alert("Error connecting to API.");
     }
   };
+
 
   return (
     <div className="form-container">
